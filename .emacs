@@ -76,3 +76,40 @@ There are two things you can do about this warning:
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+;; SET UP SOME KEYBINDINGS ;;
+
+;; more familiar forward and backward word
+(global-set-key (kbd "M-f") 'forward-same-syntax)
+(global-set-key (kbd "M-b") (lambda () (interactive)
+                              (forward-same-syntax -1)))
+
+;; C-a: move to indentation or beginning of line if already there
+(defun beginning-of-indentation-or-line ()
+  (interactive)
+  (if (= (point) (save-excursion (back-to-indentation) (point)))
+      (beginning-of-line)
+    (back-to-indentation)))
+(global-set-key (kbd "C-a") 'beginning-of-indentation-or-line)
+
+;; saner forward and backward delete-word using thingatpt
+(defun delete-syntax (&optional arg)
+  (interactive "p")
+  (let ((opoint (point)))
+    (forward-same-syntax arg)
+    (delete-region opoint (point))))
+(defun backward-delete-syntax (&optional arg)
+  (interactive)
+  (delete-syntax -1))
+(global-set-key (kbd "M-d") 'delete-syntax)
+(global-set-key (kbd "M-<backspace>") 'backward-delete-syntax)
+(global-set-key (kbd "C-<backspace>") 'backward-delete-syntax)
+
+;; completion that uses many different methods to find options
+(global-set-key (kbd "M-/") 'hippie-expand)
+
+;; switch to regexp as default search
+(global-set-key (kbd "C-s") 'isearch-forward-regexp)
+(global-set-key (kbd "\C-r") 'isearch-backward-regexp)
+(global-set-key (kbd "C-M-s") 'isearch-forward)
+(global-set-key (kbd "C-M-r") 'isearch-backward)
