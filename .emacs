@@ -48,6 +48,10 @@
 ;; Load theme
 (load-theme 'misterioso t)
 
+;; Change background colour
+(set-background-color "#1E252D")
+(add-to-list 'default-frame-alist '(background-color . "#1E252D"))
+
 ;; Don't show the startup screen
 (setq inhibit-startup-message t)
 
@@ -113,3 +117,20 @@ There are two things you can do about this warning:
 (global-set-key (kbd "\C-r") 'isearch-backward-regexp)
 (global-set-key (kbd "C-M-s") 'isearch-forward)
 (global-set-key (kbd "C-M-r") 'isearch-backward)
+
+;; Press <F12> to glash the current buffer
+(global-set-key (kbd "<f12>") 'flash-active-buffer)
+(make-face 'flash-active-buffer-face)
+(set-face-attribute 'flash-active-buffer-face nil
+                    :background "dim grey" :foreground nil)
+(defun flash-active-buffer ()
+  (interactive)
+  (run-at-time "100 millisec" nil
+               (lambda (remap-cookie)
+                 (face-remap-remove-relative remap-cookie))
+               (face-remap-add-relative 'default 'flash-active-buffer-face)))
+
+;; highlight the current line
+(global-hl-line-mode 1)
+(set-face-background 'hl-line "#3e4446")
+(set-face-foreground 'highlight nil)
