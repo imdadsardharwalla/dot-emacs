@@ -23,6 +23,8 @@
 (global-unset-key [(control z)])
 (global-set-key [C-tab] 'other-window)
 
+(define-key global-map "\C-q" 'delete-trailing-whitespace)
+
 (require 'whitespace)
  (setq whitespace-line-column 80)
  (setq whitespace-style '(face empty tabs lines-tail trailing))
@@ -48,9 +50,9 @@
 ;; Load theme
 (load-theme 'misterioso t)
 
-;; Change background colour
-(set-background-color "#1E252D")
-(add-to-list 'default-frame-alist '(background-color . "#1E252D"))
+;; Change background colour (NOT SURE ABOUT THIS)
+;;(set-background-color "#1E252D")
+;;(add-to-list 'default-frame-alist '(background-color . "#1E252D"))
 
 ;; Don't show the startup screen
 (setq inhibit-startup-message t)
