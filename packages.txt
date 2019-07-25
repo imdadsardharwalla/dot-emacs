@@ -3,3 +3,6 @@ GOOD PACKAGES TO INSTALL
 ========================
 
 * web-mode
+* dumb-jump
+* helm
+* solarized-theme
