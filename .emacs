@@ -95,7 +95,7 @@
 (define-key global-map [mouse-5] (wheel-scroll-up))
 
 (define-key global-map "\C-cr" 'replace-string)
-(define-key global-map "\C-cg" 'goto-line)
+(define-key global-map "\C-xg" 'goto-line)
 
 (global-unset-key [(control x) (control c)])
 (global-unset-key [(control z)])
