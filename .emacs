@@ -14,7 +14,7 @@
  '(cua-overwrite-cursor-color "#b58900")
  '(cua-read-only-cursor-color "#859900")
  '(current-language-environment "English")
- '(custom-enabled-themes (quote (solarized-light)))
+ '(custom-enabled-themes (quote (misterioso)))
  '(custom-safe-themes
    (quote
     ("0598c6a29e13e7112cfbc2f523e31927ab7dce56ebb2016b567e1eff6dc1fd4f" "d91ef4e714f05fff2070da7ca452980999f5361209e679ee988e3c432df24347" default)))
@@ -52,6 +52,7 @@
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
  '(select-enable-clipboard t)
+ '(show-paren-mode t)
  '(smartrep-mode-line-active-bg (solarized-color-blend "#859900" "#eee8d5" 0.2))
  '(standard-indent 3)
  '(term-default-bg-color "#fdf6e3")
@@ -232,3 +233,103 @@ There are two things you can do about this warning:
 (global-hl-line-mode 1)
 (set-face-background 'hl-line "#3e4446")
 (set-face-foreground 'highlight nil)
+
+;; highlight matching brackets
+(setq show-paren-delay 0)
+(show-paren-mode 1)
+
+;; duplicate lines up and down
+
+(defun duplicate-line-up (arg)
+  "Duplicate current line, leaving point in upper line."
+  (interactive "*p")
+
+  ;; save the point for undo
+  (setq buffer-undo-list (cons (point) buffer-undo-list))
+
+  ;; local variables for start and end of line
+  (let ((bol (save-excursion (beginning-of-line) (point)))
+        eol)
+    (save-excursion
+
+      ;; don't use forward-line for this, because you would have
+      ;; to check whether you are at the end of the buffer
+      (end-of-line)
+      (setq eol (point))
+
+      ;; store the line and disable the recording of undo information
+      (let ((line (buffer-substring bol eol))
+            (buffer-undo-list t)
+            (count arg))
+        ;; insert the line arg times
+        (while (> count 0)
+          (newline)         ;; because there is no newline in 'line'
+          (insert line)
+          (setq count (1- count)))
+        )
+
+      ;; create the undo information
+      (setq buffer-undo-list (cons (cons eol (point)) buffer-undo-list)))
+    )) ; end-of-let
+
+(defun duplicate-line-down (arg)
+  "Duplicate current line, leaving point in lower line."
+  (interactive "*p")
+
+  (duplicate-line-up arg)
+
+  ;; put the point in the lowest line and return
+  (next-line arg))
+
+(global-set-key (kbd "C-M-n") 'duplicate-line-down)
+(global-set-key (kbd "C-M-p") 'duplicate-line-up)
+
+(global-set-key [C-M-down] 'duplicate-line-down)
+(global-set-key [C-M-up] 'duplicate-line-up)
+
+;; move lines up and down (TODO: this doesn't quite work properly)
+
+(defun move-text-internal (arg)
+  (cond
+   ((and mark-active transient-mark-mode)
+    (if (> (point) (mark))
+        (exchange-point-and-mark))
+    (let ((column (current-column))
+          (text (delete-and-extract-region (point) (mark))))
+      (forward-line arg)
+      (move-to-column column t)
+      (set-mark (point))
+      (insert text)
+      (exchange-point-and-mark)
+      (setq deactivate-mark nil)))
+   (t
+    (let ((column (current-column)))
+      (beginning-of-line)
+      (when (or (> arg 0) (not (bobp)))
+        (forward-line)
+        (when (or (< arg 0) (not (eobp)))
+          (transpose-lines arg))
+        (forward-line -1))
+      (move-to-column column t)))))
+
+(defun move-text-down (arg)
+  "Move region (transient-mark-mode active) or current line
+  arg lines down."
+  (interactive "*p")
+  (move-text-internal arg))
+
+(defun move-text-up (arg)
+  "Move region (transient-mark-mode active) or current line
+  arg lines up."
+  (interactive "*p")
+  (move-text-internal (- arg))
+  (forward-line -1))
+
+(provide 'move-text)
+
+
+(global-set-key (kbd "M-p") 'move-text-up)
+(global-set-key (kbd "M-n") 'move-text-down)
+
+(global-set-key [M-up] 'move-text-up)
+(global-set-key [M-down] 'move-text-down)
