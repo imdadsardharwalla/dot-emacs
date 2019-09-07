@@ -48,7 +48,9 @@
  '(nrepl-message-colors
    (quote
     ("#dc322f" "#cb4b16" "#b58900" "#546E00" "#B4C342" "#00629D" "#2aa198" "#d33682" "#6c71c4")))
- '(package-selected-packages (quote (dumb-jump php-mode)))
+ '(package-selected-packages
+   (quote
+    (sass-mode flymake-gjshint flymake-php flymake-sass scss-mode dumb-jump php-mode)))
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
  '(select-enable-clipboard t)
@@ -119,7 +121,7 @@
                   (point))))
     (comment-or-uncomment-region start end)))
 
-(define-key global-map [(control ?\;)] 'comment-eclipse)
+(define-key global-map [(control ?/)] 'comment-eclipse)
 
 (require 'whitespace)
  (setq whitespace-line-column 80)
